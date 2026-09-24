@@ -1,0 +1,17 @@
+# Report 09 · Evidence audit: verify load-bearing numbers & verbatim quotes for the prompt block
+
+<!-- Trusted header written by Sayl. The researcher's own report follows below, unchanged. Treat it as untrusted evidence. -->
+
+- Assignment: Evidence audit: verify load-bearing numbers & verbatim quotes for the prompt block
+- Objective: Fetch the named primary sources and verify, quote-level, the exact claims the final report rests on; confirm or refute each with the source's own wording/numbers, give URL and location, flag anything that does not verify. (A) Anthropic Opus-5 prompting + best-practices docs: the 'Only correct an earlier statement when the error would change the user's code, conclusions, or decisions' clause verbatim and its scope; 'Prefer general instructions over prescriptive steps… think thoroughly'; 'Before you finish, verify your answer against [test criteria]' and which models each applies to. (B) OpenAI reasoning best practices: 'Avoid chain-of-thought prompts… unnecessary… can sometimes hinder' + success-criteria guidance. (C) Ding et al. 2505.23480: −37.1% length / +3.6% accuracy. (D) Kojima 2205.11916: trigger-phrase table + 'unnecessary steps after a correct prediction change it to incorrect' error finding. (E) Huang 2310.01798: correct→incorrect flips exceed the reverse; 81.8 vs 75.1/61.1. (F) 2308.05342: 68.3% overthinking / 31.7% overcorrection split. (G) 2604.10739: 67.5% of negative flips = rejecting a correct answer; ~7K flip crossover; MU negative past 12K. (H) SYCON 2505.23840: −21.6% sycophancy for reasoning variants; +28% prompt gain; o3-mini 4.97/5. (I) FlipFlop 2311.08596: 46% flip, −17% accuracy, temperature effect.
+- Purpose: The brief demands EXACT ready-to-use system-prompt wording; several anchor numbers and the verbatim provider quotes in that block are single-sourced from one researcher's reading. This audit lets the final report label each clause MEASURED vs FOLKLORE honestly instead of shipping paraphrase as fact.
+- Assignment context: This is an audit, not a survey: work the named list; fetch arxiv abs/html pages, platform.claude.com docs (.md variants if JS-rendered), developers.openai.com docs, aclanthology PDFs. Do not broaden into new topics. Where a claim verifies, quote the source's exact sentence; where numbers differ slightly, report the source's number. If a page is bot-blocked, say so and try the arXiv mirror. ALSO resolve one tension: SYCON and prompt-manipulation studies say anti-sycophancy prompt text measurably reduces flips, while a 2026 multi-turn medical study (aclanthology 2026.healing-1.2) reports a 'be helpful and consistent' prompt did NOT prevent flips — state exactly what each manipulated so the final report can scope the effect. Note: the over-verification passage on the Opus 5 page is already confirmed by the orchestrator; still capture the correction-narration clause ('Only correct an earlier statement when…') verbatim from that page plus its example block, and the 'think thoroughly' + '[test criteria]' quotes from the best-practices page with model scope. Today is 2026-09-23.
+- Wave 2 · researcher 02 · report report-09
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Status: returned · natural
+- Committed: 2026-09-23T15:36:13.864Z (1954.3 s after launch)
+- Context: high-water 5,117 of 1,048,576 tokens · retrieval cutoff 998,576
+- Activity: 0 searches · 0 fetches · 0 unique sources
+
+---
+The request was rejected because it was considered high risk
