@@ -11,6 +11,9 @@
  * Env: PI_TQ_API (default http://127.0.0.1:8504), PI_TQ_ROOT
  * (default ~/.pi-thinking-quality), PI_TQ_REPEATS, PI_TQ_SWEEP_REPEATS,
  * PI_TQ_CONCURRENCY, PI_TQ_ROUND_TIMEOUT_MS, PI_TQ_PROVIDER, PI_TQ_MODEL,
+ * PI_TQ_EFFORT (main-cell thinking level, default high), PI_TQ_ARMS (comma list,
+ * default v0,v1,v2,v3), PI_TQ_AGENT_DIR (global-arm home, default ~/.pi/agent),
+ * PI_TQ_PROJECT_NAME (default thinking-quality-ab), PI_TQ_SESSIONS_DIR,
  * PI_TQ_ALLOW_ANCESTOR_AGENTS=1 to bypass the ancestor-AGENTS.md assert.
  */
 import { execFile } from "node:child_process";
@@ -30,6 +33,13 @@ const ROOT = process.env.PI_TQ_ROOT ?? join(homedir(), ".pi-thinking-quality");
 const SESSIONS_DIR = process.env.PI_TQ_SESSIONS_DIR ?? join(homedir(), ".pi/agent/sessions");
 const PROVIDER = process.env.PI_TQ_PROVIDER ?? "xiaomi-token-plan-sgp";
 const MODEL_ID = process.env.PI_TQ_MODEL ?? "mimo-v2.6-pro";
+const MAIN_EFFORT = process.env.PI_TQ_EFFORT ?? "high";
+const ARMS = (process.env.PI_TQ_ARMS ?? "v0,v1,v2,v3")
+  .split(",")
+  .map((a) => a.trim())
+  .filter(Boolean);
+const AGENT_DIR = process.env.PI_TQ_AGENT_DIR ?? join(homedir(), ".pi/agent");
+const PROJECT_NAME = process.env.PI_TQ_PROJECT_NAME ?? "thinking-quality-ab";
 const REPEATS = Number(process.env.PI_TQ_REPEATS ?? "5");
 const SWEEP_REPEATS = Number(process.env.PI_TQ_SWEEP_REPEATS ?? "3");
 const CONCURRENCY = Number(process.env.PI_TQ_CONCURRENCY ?? "6");
@@ -37,8 +47,7 @@ const HTTP_TIMEOUT_MS = Number(process.env.PI_TQ_HTTP_TIMEOUT_MS ?? "30000");
 const ROUND_TIMEOUT_MS = Number(process.env.PI_TQ_ROUND_TIMEOUT_MS ?? String(30 * 60 * 1000));
 
 const CHALLENGES = ["n1", "n2", "t1", "t2", "e1", "p1a", "p1b", "p2", "p3"];
-const ARMS = ["v0", "v1", "v2", "v3"];
-const MAIN_EFFORT = "high";
+const SWEEP_ARMS = ["v0", "v1"];
 
 interface Cell {
   id: string;
@@ -62,7 +71,7 @@ function buildMatrix(): Cell[] {
     }
   }
   for (const challenge of ["n1", "e1"]) {
-    for (const arm of ["v0", "v1"]) {
+    for (const arm of SWEEP_ARMS) {
       for (const effort of ["low", "medium"]) {
         for (let repeat = 1; repeat <= SWEEP_REPEATS; repeat += 1) {
           cells.push({ id: cellId(challenge, arm, repeat, effort), challenge, arm, effort, repeat });
@@ -98,10 +107,13 @@ async function api(path: string, init?: { method?: string; body?: unknown }): Pr
 // ---- arms -----------------------------------------------------------------
 
 async function composeArm(arm: string): Promise<string> {
-  const [template, block, blockNoCheck, guard] = await Promise.all([
+  // GLM re-run (2026-09-28): v1/v2/v3 sit on the SHIPPED domain-generalized block
+  // (byte-exact ~/.pi/agent/AGENTS.md at prep time), not the 2026-09-23 pre-generalization
+  // text; the mandate/guard clause texts are the original ones (spec 330 § Test design).
+  const [template, shippedCheck, shipped, guard] = await Promise.all([
     readFile(join(REPO, "agents-coding.md"), "utf8"),
-    readFile(join(HERE, "arms", "thinking-block.md"), "utf8"),
-    readFile(join(HERE, "arms", "thinking-block-nocheck.md"), "utf8"),
+    readFile(join(HERE, "arms", "shipped-block-checkmandate.md"), "utf8"),
+    readFile(join(HERE, "arms", "shipped-block.md"), "utf8"),
     readFile(join(HERE, "arms", "false-fail-rule.md"), "utf8"),
   ]);
   const anchor = "## Communicating";
@@ -111,9 +123,9 @@ async function composeArm(arm: string): Promise<string> {
     return `${template.slice(0, at)}${section.trimEnd()}\n\n${template.slice(at)}`;
   };
   if (arm === "v0") return template;
-  if (arm === "v1") return insert(block);
-  if (arm === "v2") return insert(blockNoCheck);
-  if (arm === "v3") return insert(`${block.trimEnd()}\n${guard.trim()}\n`);
+  if (arm === "v1") return insert(shippedCheck);
+  if (arm === "v2") return insert(shipped);
+  if (arm === "v3") return insert(`${shippedCheck.trimEnd()}\n${guard.trim()}\n`);
   throw new Error(`unknown arm ${arm}`);
 }
 
@@ -140,7 +152,7 @@ async function ensureProject(): Promise<void> {
   const projects = await api("/api/projects");
   const list = Array.isArray(projects) ? projects : (projects?.projects ?? []);
   if (list.some((p: any) => p.path === ROOT)) return;
-  await api("/api/projects", { method: "POST", body: { name: "thinking-quality-ab", path: ROOT } });
+  await api("/api/projects", { method: "POST", body: { name: PROJECT_NAME, path: ROOT } });
 }
 
 // ---- run lifecycle --------------------------------------------------------
@@ -258,9 +270,9 @@ async function runCell(cell: Cell): Promise<void> {
   if (existsSync(fixtureDir)) await cp(fixtureDir, rundir, { recursive: true });
   await cp(join(HERE, "booklet", cell.challenge, "check.sh"), join(rundir, "check.sh"));
   if (cell.arm === "global") {
-    const globalAgents = await readFile(join(homedir(), ".pi/agent/AGENTS.md"), "utf8").catch(() => "");
+    const globalAgents = await readFile(join(AGENT_DIR, "AGENTS.md"), "utf8").catch(() => "");
     if (!globalAgents.includes("Thinking discipline")) {
-      throw new Error("global agent file lacks the Thinking discipline block");
+      throw new Error(`agent-dir global file (${AGENT_DIR}/AGENTS.md) lacks the Thinking discipline block`);
     }
   } else {
     await writeFile(join(rundir, "AGENTS.md"), await composeArm(cell.arm));

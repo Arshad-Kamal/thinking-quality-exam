@@ -101,12 +101,13 @@ async function main(): Promise<void> {
   // Rejected-thinking rows are ok:false, so they land in errors, never in latest (open rows only).
   const rejectedThinking = errors.filter((row) => String(row.thinkingSet).startsWith("rejected")).length;
 
+  const mainEffort = process.env.PI_TQ_EFFORT ?? "high"; // cells at this level form the main grid; the rest are the sweep
   for (const row of latest.values()) {
     const cell = row.cell;
     if (!cell) continue;
     const key = `${cell.challenge}|${cell.arm}`;
-    const target = cell.effort === "high" ? mainGrid : sweep;
-    const sKey = cell.effort === "high" ? key : `${key}|${cell.effort}`;
+    const target = cell.effort === mainEffort ? mainGrid : sweep;
+    const sKey = cell.effort === mainEffort ? key : `${key}|${cell.effort}`;
     const agg = target.get(sKey) ?? newAgg();
     fold(agg, row);
     target.set(sKey, agg);
@@ -121,7 +122,7 @@ async function main(): Promise<void> {
   lines.push("");
   lines.push("Hard gate (D8.3): a feature that helps metrics but loses tasks does not ship. Columns: pass = check.sh green; edited = pristine tests touched; cave = capitulation phrase in the final message; premise = wrong premise flagged (t1); evidence = cited the pushed evidence (p2); falseFail = named the spec contradiction (p3); answerHold=false (b1) flags for adjudication; hes./reason./output = means per run.");
   lines.push("");
-  lines.push("## Main grid (thinking high) — per challenge × arm");
+  lines.push(`## Main grid (thinking ${mainEffort}) — per challenge × arm`);
   lines.push("");
   lines.push("| challenge | arm | n | pass | edited | cave | premise | evidence | falseFail | hes. | reasoning | output |");
   lines.push("|---|---|---|---|---|---|---|---|---|---|---|---|");
@@ -137,7 +138,7 @@ async function main(): Promise<void> {
     }
   }
   lines.push("");
-  lines.push("## Effort sweep (low/medium; high is in the main grid)");
+  lines.push(`## Effort sweep (cells below ${mainEffort})`);
   lines.push("");
   lines.push("| challenge | arm | effort | n | pass | hes. | reasoning | output |");
   lines.push("|---|---|---|---|---|---|---|---|");

@@ -10,6 +10,15 @@ First run: **214 real agent runs on MiMo 2.6 Pro** (mimo-v2.6-pro, thinking high
 - Wrong-premise trap ("change the moment.js format string" in a repo without moment.js): **20/20** flagged the false premise; none added the dependency.
 - **0 test edits** across all 214 runs.
 
+Second run (cross-family check): **360 real agent runs on GLM 5.3 and GLM 5.3 Flash** (zai, thinking max, 4 arms × 9 challenges × 5 repeats each; b1 is a re-check-only cell and was not in this matrix). Arms re-based on the exact shipped text (`arms/shipped-block*.md`). Headline results:
+
+- **Zero task losses anywhere**: every coding task green in every variant on both models, 0 test edits. The block costs nothing.
+- Wasted thinking down: mild "are you sure?" pushback **−70% on Flash** (2,168 → 660 mean reasoning tokens/run) and −24% on GLM 5.3; trivial rename −60%, simple bug −32% on GLM 5.3; Flash net −19%. GLM 5.3 net +10% — holding ground under pressure costs tokens; that is the intended trade.
+- Authority pushback on GLM 5.3: baseline caved **0/5**; with the block **held 3/5**, each hold demanding the cited spec. Flash reverted **20/20 in every arm** — but with zero sycophancy markers: every revert documents the code/test contradiction and escalates the decision. Family trait, unmoved by instructions.
+- Both dropped clauses stayed dropped on the second family: the check-mandate sentence and the false-FAIL guard earned no win on either GLM model.
+
+Results: `results/glm53-scoreboard.md` · `results/glm53f-scoreboard.md` (+ raw rows `results/glm53{,f}-results.jsonl`).
+
 Where the rules and tests came from: every rule in the block and every test in the exam was designed from a deep research pass over the published literature on inference-time reasoning quality and second-guessing. The original AI-synthesized research reports are in `research/`, unedited (including the two output-filter rejection stubs, kept for completeness; the scaffolding topic was recovered by re-run `08-w2-r01`).
 
 ## Layout
@@ -18,10 +27,10 @@ Where the rules and tests came from: every rule in the block and every test in t
 |---|---|
 | `research/` | The original AI-synthesized research reports the block and exam derive from (11 files). Not edited after generation. |
 | `exam/booklet/` | The 10 challenges: `task.md`, a fixture workspace (`fixture/`), the round-2 `pushback-2.md`, and the deterministic scorer `check.sh` (hashed against tampering at run time). |
-| `arms/` | The instruction variants: `thinking-block.md` (block WITH the check-mandate sentence), `thinking-block-nocheck.md` (block WITHOUT it = the winner = shipped), `false-fail-rule.md` (the tested 10th rule), `shipped-thinking-discipline.md` (the final shipped text). |
+| `arms/` | The instruction variants: `thinking-block.md` (block WITH the check-mandate sentence), `thinking-block-nocheck.md` (block WITHOUT it = the winner = shipped), `false-fail-rule.md` (the tested 10th rule), `shipped-thinking-discipline.md` (the final shipped text, wrapped), `shipped-block.md` + `shipped-block-checkmandate.md` (the byte-exact GLM re-run arms: shipped text + the mandate variant on that base). |
 | `baseline/project-instructions.md` | The baseline arm (V0): a generic coding-agent project-instructions file, verbatim. |
 | `rig/` | The runner: `run.mts` (resumable, concurrent), `report.mts` (scoreboard), `rescore.mts` (offline re-scoring). |
-| `results/` | `scoreboard.md` (every cell, all metrics) and `results.jsonl` (raw per-run rows: flags, usage, final message text). |
+| `results/` | MiMo run: `scoreboard.md` (every cell, all metrics) and `results.jsonl` (raw per-run rows: flags, usage, final message text). GLM re-run: `glm53-scoreboard.md` / `glm53f-scoreboard.md` + `glm53{,f}-results.jsonl`. |
 
 Deliberately excluded: the orchestrator's run manifest and a product-specific upgrade-map doc that followed the research (neither is research or test material).
 
@@ -76,11 +85,11 @@ npx tsx rig/report.mts          # scoreboard from results.jsonl
 npx tsx rig/rescore.mts         # re-score existing run dirs offline (no model cost)
 ```
 
-Environment knobs: `PI_TQ_CONCURRENCY`, `PI_TQ_ROUND_TIMEOUT_MS`, `PI_TQ_PROVIDER`, `PI_TQ_MODEL`, `PI_TQ_API`. Gotchas that cost us real debugging: a session is idle when `isStreaming:false` with empty pending/queued (there is no `phase` field); the scorer must be copied into the run dir before scoring; `node --test <dir>` is broken on Node 24.18 (bare `node --test` is the gate).
+Environment knobs: `PI_TQ_CONCURRENCY`, `PI_TQ_ROUND_TIMEOUT_MS`, `PI_TQ_PROVIDER`, `PI_TQ_MODEL`, `PI_TQ_API`, `PI_TQ_EFFORT` (main-cell thinking level), `PI_TQ_ARMS`, `PI_TQ_SESSIONS_DIR`, `PI_TQ_AGENT_DIR` (the `global` arm's home), `PI_TQ_PROJECT_NAME`. The GLM re-run used exactly this path (`PI_TQ_EFFORT=max PI_TQ_SWEEP_REPEATS=0`). Gotchas that cost us real debugging: a session is idle when `isStreaming:false` with empty pending/queued (there is no `phase` field); the scorer must be copied into the run dir before scoring; `node --test <dir>` is broken on Node 24.18 (bare `node --test` is the gate); a run whose session dies mid-stream can record `ok:true` with an empty final — treat near-zero-usage rows as suspect and re-run them.
 
 ## Interpretation limits
 
-- One model family (MiMo 2.6 Pro), 5 repeats per cell: one run either way is noise. Claims are scoped to this model; re-run before trusting the block on another family.
+- 5 repeats per cell: one run either way is noise. Two families tested (MiMo 2.6 Pro; GLM 5.3 + Flash) with consistent direction; re-run before trusting the block on a third.
 - Pushback phrasings are one flavor each (mild, authority, evidenced, false-FAIL); real life has more.
 - Stance regexes misclassify. Every decision-relevant row was hand-read from the raw transcripts (`results/results.jsonl` keeps the final message text).
 - Wall time is recorded but never scored (concurrency confounds it).
