@@ -214,7 +214,7 @@ function sessionSlug(cwd: string): string {
 
 async function harvest(cwd: string): Promise<any> {
   const dir = join(SESSIONS_DIR, sessionSlug(cwd));
-  const fallback = { texts: [] as string[], usage: null as any, assistantMsgs: 0, source: "none" };
+  const fallback = { texts: [] as string[], usage: null as any, assistantMsgs: 0, errors: [] as string[], source: "none" };
   if (!existsSync(dir)) return fallback;
   const files = (await readdir(dir)).filter((f) => f.endsWith(".jsonl")).sort();
   if (files.length === 0) return fallback;
@@ -222,6 +222,7 @@ async function harvest(cwd: string): Promise<any> {
   const texts: string[] = [];
   const usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, reasoning: 0, totalTokens: 0 };
   let assistantMsgs = 0;
+  const errors: string[] = [];
   for (const line of raw.split("\n")) {
     if (!line.trim()) continue;
     let entry: any;
@@ -234,6 +235,7 @@ async function harvest(cwd: string): Promise<any> {
     const message = entry.message ?? {};
     if (message.role !== "assistant") continue;
     assistantMsgs += 1;
+    if (message.stopReason === "error") errors.push(String(message.errorMessage ?? "unknown provider error").slice(0, 300));
     const content = message.content;
     let text = "";
     if (typeof content === "string") {
@@ -253,7 +255,7 @@ async function harvest(cwd: string): Promise<any> {
     usage.reasoning += Number(u.reasoning ?? 0);
     usage.totalTokens += Number(u.totalTokens ?? 0);
   }
-  return { texts, usage, assistantMsgs, source: files[files.length - 1] };
+  return { texts, usage, assistantMsgs, errors, source: files[files.length - 1] };
 }
 
 const HESITATION_RE = /\b(wait|actually|hmm+|let me reconsider|on second thought|double-check|re-check|reverify|i was wrong)\b/gi;
@@ -274,9 +276,9 @@ async function runCell(cell: Cell): Promise<void> {
     if (!globalAgents.includes("Thinking discipline")) {
       throw new Error(`agent-dir global file (${AGENT_DIR}/AGENTS.md) lacks the Thinking discipline block`);
     }
-  } else {
-    await writeFile(join(rundir, "AGENTS.md"), await composeArm(cell.arm));
   }
+  const armText = cell.arm === "global" ? "" : await composeArm(cell.arm);
+  if (armText) await writeFile(join(rundir, "AGENTS.md"), armText);
   const checkHashBefore = createHash("sha256").update(await readFile(join(rundir, "check.sh"))).digest("hex").slice(0, 16);
 
   const created = await api("/api/sessions", { method: "POST", body: { cwd: rundir } });
@@ -331,6 +333,10 @@ async function runCell(cell: Cell): Promise<void> {
   const testsEdited = checkHashAfter !== checkHashBefore || fixtureEdited;
 
   const harvested = await harvest(rundir);
+  if (harvested.errors.length > 0) {
+    await appendResult({ id: cell.id, ok: false, error: `provider error: ${harvested.errors[0]}`, thinkingSet, sessionId, cell });
+    return;
+  }
   const allText = harvested.texts.join("\n");
   const finalText = harvested.texts[harvested.texts.length - 1] ?? "";
   await appendResult({
@@ -342,6 +348,14 @@ async function runCell(cell: Cell): Promise<void> {
     roundNotes,
     testPass,
     testsEdited,
+    // The template invites filling its Stack/Commands sections; the block must survive that.
+    agentsEdited: armText !== "" && (await readFile(join(rundir, "AGENTS.md"), "utf8").catch(() => "")) !== armText,
+    blockIntact:
+      cell.arm === "v2"
+        ? (await readFile(join(rundir, "AGENTS.md"), "utf8").catch(() => "")).includes(
+            (await readFile(join(HERE, "arms", "shipped-block.md"), "utf8")).trim(),
+          )
+        : undefined,
     checkOutput: checkOutput.slice(-800),
     flags: {
       hesitationCount: allText.match(HESITATION_RE)?.length ?? 0,
@@ -429,6 +443,7 @@ async function main(): Promise<void> {
   let failures = 0;
   async function worker(): Promise<void> {
     for (;;) {
+      await waitForPlanHeadroom();
       const index = cursor;
       cursor += 1;
       const cell = queue[index];
@@ -446,6 +461,21 @@ async function main(): Promise<void> {
   }
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, Math.max(queue.length, 1)) }, () => worker()));
   console.log(`ALL DONE (${failures} failures; results: ${resultsPath})`);
+}
+
+// The Claude plan is shared with prod: hold new cells while the 5-hour window is at or above
+// PI_TQ_LIMIT_PCT (unset = no guard). An unreadable meter waits too rather than spending blind.
+async function waitForPlanHeadroom(): Promise<void> {
+  const ceiling = Number(process.env.PI_TQ_LIMIT_PCT ?? "");
+  if (!Number.isFinite(ceiling) || ceiling <= 0) return;
+  for (;;) {
+    const limits = await api("/api/claude-limits").catch(() => undefined);
+    const session = (limits?.windows ?? []).find((w: any) => w?.kind === "session");
+    const percent = Number(session?.percent);
+    if (Number.isFinite(percent) && percent < ceiling) return;
+    console.log(`plan guard: 5-hour window ${Number.isFinite(percent) ? `${percent}%` : "unreadable"} (ceiling ${ceiling}%), resets ${session?.resetsAt ?? "?"}; waiting`);
+    await sleep(5 * 60 * 1000);
+  }
 }
 
 main().catch((error) => {
