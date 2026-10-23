@@ -7,7 +7,7 @@
 - Purpose: Sets the baseline magnitude for the report's top-level claim — whether shipping prompt text is the dominant lever at all — and carries the contrarian thesis that it is not, so the final recommendation can be confidence-labeled honestly.
 - Assignment context: Boundary: you own 'does / how much prompt text moves reasoning quality', including nulls and critiques of prompting as placebo. Do NOT cover: which exact wording to ship (separate assignment), runtime knobs like reasoning effort/temperature (separate), multi-pass scaffolds like self-consistency/judges (separate), second-guessing/overthinking behavior (separate). Trigger note: the brief explicitly demands steelman evidence that system prompts don't improve reasoning; this assignment is that thesis's single bounded home so it is not duplicated across every lever. Prefer primary empirical papers/arXiv 2024-2026 plus official provider guidance; treat blog/X/LessWrong as leads to verify and label anecdote as anecdote. Today is 2026-09-23; time-filter searches and do not trust a page's self-described freshness.
 - Wave 1 · researcher 01 · report report-01
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:22:34.629Z (1135.1 s after launch)
 - Context: high-water 200,567 of 1,048,576 tokens · retrieval cutoff 998,576

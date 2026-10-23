@@ -7,7 +7,7 @@
 - Purpose: Delivers the report's (c) deliverable — which scaffolds earn their latency/cost — and the magnitude rows for those levers in the ranked comparison.
 - Assignment context: Boundary: you own multi-sample / multi-pass / multi-model architectures and tool-executed verification. Do NOT cover single-pass in-prompt constructs (separate), per-run knobs like thinking budget/temperature (separate), or pricing rates (separate — note token multipliers like 'k samples = k x cost' as facts). Report k-scaling curves and pass-count costs explicitly since the final table ranks influence per unit cost. Label practitioner consensus ANECDOTAL vs measured results. Today is 2026-09-23.
 - Wave 1 · researcher 05 · report report-05
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:22:09.815Z (1110.3 s after launch)
 - Context: high-water 154,759 of 1,048,576 tokens · retrieval cutoff 998,576

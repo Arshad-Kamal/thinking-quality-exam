@@ -7,7 +7,7 @@
 - Purpose: Supplies the evidence base AND the wording sources for the report's mandatory DRAFT system-prompt block; without this the deliverable would be vague advice rather than exact text.
 - Assignment context: Boundary: you own single-pass in-prompt text and its exact phrasing sources. Do NOT cover: multi-pass/multi-sample scaffolds (self-consistency voting, separate critic/judge models) — separate assignment; anti-second-guessing/overthinking doubt-spiral clauses — separate assignment (note their existence and move on); runtime knobs — separate. Trigger note: this is split out because the named deliverable (exact DRAFT system-prompt wording) must be sourced from provider prompting guides and prompt-wording studies — a different retrieval problem from the effect-size papers another assignment collects; repeating it there would leave the wording unsourced everywhere. Mark every claim MEASURED / VENDOR-CLAIMED / FOLKLORE. Today is 2026-09-23.
 - Wave 1 · researcher 02 · report report-02
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:27:03.759Z (1404.2 s after launch)
 - Context: high-water 277,661 of 1,048,576 tokens · retrieval cutoff 998,576

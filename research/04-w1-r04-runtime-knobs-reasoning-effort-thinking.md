@@ -7,7 +7,7 @@
 - Purpose: Delivers the report's (b) deliverable — which runtime knobs to set and how — plus the mechanism/magnitude rows of the ranked lever table.
 - Assignment context: Boundary: you own per-run knobs inside one model. Do NOT cover: multi-pass/multi-sample scaffolding (self-consistency, verifier/judge models — separate), reasoning-vs-non-reasoning model switching (separate), pricing/latency cost tables (separate — give at most one-line cost facts if you happen to see them). Verify knob names and numeric limits against the providers' own docs pages (fetch them), because blog posts and stale tutorials misstate these. Today is 2026-09-23; anchor 'current' to it.
 - Wave 1 · researcher 04 · report report-04
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:25:11.766Z (1292.2 s after launch)
 - Context: high-water 262,771 of 1,048,576 tokens · retrieval cutoff 998,576

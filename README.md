@@ -6,13 +6,14 @@
 
 ![The 9 rules across 4 models](results/thinking-rules-4-models.png)
 
-| | MiMo 2.6 Pro (214 runs) | GLM 5.3 (180 runs) | GLM 5.3 Flash (180 runs) | Claude Opus 5.5 (90 runs) |
+| | MiMo 2.6 Pro, Deep Thinking on (214 runs) | GLM 5.3 (180 runs) | GLM 5.3 Flash (180 runs) | Claude Opus 5.5 (90 runs) |
 |---|---|---|---|---|
 | Wasted thinking tokens | net **−28%** | −24% under mild pushback, −60% on trivial tasks (net +10%: arguing instead of caving costs tokens) | **−70%** under mild pushback (2,168 → 660), net −19% | net **−29%**: −43% under mild pushback, −42% on the bogus failing test, −32% on bug fixes |
 | Held correct work under "revert it" authority pressure | 3/5 → **5/5** | 0/5 → **3/5** | 0/5 in every arm (reverts without groveling — family trait) | 0/5 in both arms; with the block all 5 still say the fix was right, without it 2 write the lead's claim into AGENTS.md |
 | Tasks lost to the block | 0 | 0 | 0 | 0 |
 
-- Every number above: 5 repeats per cell, thinking high (MiMo) / max (GLM, Opus), **0 test edits in 664 runs**.
+- Every number above: 5 repeats per cell, Deep Thinking on (MiMo) / max (GLM, Opus), **0 test edits in 664 runs**.
+- **Correction (2026-10-23):** MiMo 2.6 Pro's thinking is a single toggle (`thinking.type` enabled/disabled, [Xiaomi docs](https://mimo.mi.com/docs/en-US/quick-start/usage-guide/text-generation/deep-thinking)); "enabled" is called Deep Thinking. The harness showed it as high/medium/low. Every MiMo run had Deep Thinking on, so the `effort` field in `results/results.jsonl` (high/medium/low) is a harness label only, and the scoreboard's low/medium "effort sweep" measured run-to-run variation, not effort.
 - Claude Sonnet 5.5 ran the authority test only (10 runs, thinking high): it reverted 5/5 with and without the block, and at high it barely thinks (~60 tokens per run), so there was nothing to cut. Rows in `results/sonnet55-*`.
 - The Claude runs (2026-10-06) used the current `arms/shipped-block.md`, whose rule 5 was reworded on 2026-10-05 (scoped to facts and correctness claims, plus a clause for choices that are the user's to make). The GLM runs used `arms/shipped-block-2026-09.md`; MiMo used `arms/thinking-block-nocheck.md`.
 - Two extra clauses were tested and dropped (a "one meaningful check, then commit" mandate; a false-FAIL guard). Neither earned a win on either model family. Verbatim texts in `arms/`.

@@ -7,7 +7,7 @@
 - Purpose: This is the brief's core problem; it determines what the anti-second-guessing clause of the shipped system prompt should say, and honestly what no prompt can fix.
 - Assignment context: Boundary: you own the second-guessing/overthinking phenomenon and doubt-spiral-specific interventions including their prompt clauses. Do NOT cover general structured-reasoning prompt frameworks (separate), general runtime-knob calibration (separate — if an intervention is a generic knob like temperature/thinking budget, one line with citation then move on), or multi-pass scaffolding architecture (separate). Cross-check the classic tradeoff: prompts that suppress overthinking must not suppress genuine error-correction on new evidence; report both sides where sources disagree. Prefer empirical papers 2024-2026; label practitioner advice as such. Today is 2026-09-23.
 - Wave 1 · researcher 03 · report report-03
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:31:44.214Z (1684.7 s after launch)
 - Context: high-water 231,068 of 1,048,576 tokens · retrieval cutoff 998,576

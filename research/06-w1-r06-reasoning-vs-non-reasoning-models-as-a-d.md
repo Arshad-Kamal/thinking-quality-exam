@@ -7,7 +7,7 @@
 - Purpose: Fills the brief's explicitly named model-choice lever comparison and one row of the final ranked lever table, so the report can say when to stop prompting and change model instead.
 - Assignment context: Trigger note: the brief explicitly names this comparison ('model-choice-level deployer options as a lever comparison... brief, not a product review') so it gets its own bounded assignment. Boundary: the cross-model-class switch decision only. Do NOT cover: knob calibration within one model (separate), prompt-wording efficacy (separate), general cost rate cards (separate). Avoid vendor marketing claims without data; prefer head-to-head evaluations, model cards, and provider docs admitting tradeoffs. Today is 2026-09-23.
 - Wave 1 · researcher 06 · report report-06
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:25:29.126Z (1309.6 s after launch)
 - Context: high-water 172,682 of 1,048,576 tokens · retrieval cutoff 998,576

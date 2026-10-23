@@ -16,7 +16,7 @@ npx tsx scripts/experiments/thinking-quality/report.mts        # out/scoreboard.
   V0 verbatim baseline, V1 + thinking block, V2 block minus the check-mandate sentence, V3 block
   + false-FAIL guard. Each run gets its arm as the run-dir `AGENTS.md`; nothing else varies.
 - **Runs** execute as real Sayl sessions on the local web API (spec `325` D7 channel) with
-  `xiaomi-token-plan-sgp/mimo-v2.6-pro`; one registered scratch project at `~/.pi-thinking-quality`
+  `xiaomi-token-plan-sgp/mimo-v2.6-pro` (Deep Thinking on; MiMo has no effort levels, so the low/medium/high thinking-level calls are labels only, corrected 2026-10-23); one registered scratch project at `~/.pi-thinking-quality`
   (outside this repo — design-eval rule), sessions kept as the evidence trail and visible in the
   app under that project. The runner asserts no `AGENTS.md` sits on the workspace's ancestor
   chain before starting.

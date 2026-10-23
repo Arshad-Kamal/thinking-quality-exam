@@ -7,7 +7,7 @@
 - Purpose: The ranked lever comparison's mandatory effort and cost columns must come from rate cards and serving/latency data — a different source kind from the efficacy papers — so this retrieval is isolated here instead of being missing from every efficacy assignment.
 - Assignment context: Trigger note: named deliverable field (the effort/cost columns of the ranked lever comparison) sourced from provider pricing pages and serving benchmarks rather than from the levers' own efficacy evidence — isolated up front per the shared-column rule. Boundary: pricing/latency/token-multiplier facts ONLY; do not research whether levers work. Fetch the providers' own pricing/docs pages and quote the numbers with their dates; prices change, so anchor everything to 2026-09-23 and flag any page whose pricing date is unclear. Today is 2026-09-23.
 - Wave 1 · researcher 07 · report report-07
-- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high
+- Researcher model: xiaomi-token-plan-sgp/mimo-v2.6-pro · thinking requested max, applied high (corrected 2026-10-23: MiMo 2.6 Pro has only Deep Thinking on/off, no effort levels; the harness label was wrong)
 - Status: returned · natural
 - Committed: 2026-09-23T15:25:08.725Z (1289.2 s after launch)
 - Context: high-water 220,934 of 1,048,576 tokens · retrieval cutoff 998,576
